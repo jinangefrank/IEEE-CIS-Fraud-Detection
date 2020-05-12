@@ -17,12 +17,12 @@ def clean(path):
 
     pd.set_option('display.max_columns', 500)
 
-    n_df = pcnd.shape[0] #shape的功能是查看矩阵或者数组的维度
-    print ("共有{row}行{col}列数据".format(
-            row=pcnd.shape[0], #所以这里就是看pcnd的行数
+    n_df = pcnd.shape[0]
+    print ("Total{row}rows and {col}columns".format(
+            row=pcnd.shape[0],
             col=pcnd.shape[1]))
 
-    colt = pcnd.columns.tolist() #tolist的功能是将数组或者矩阵转换成列表
+    colt = pcnd.columns.tolist()
 
     tnum = []
     tmis = []
@@ -31,9 +31,9 @@ def clean(path):
 
     for col in colt:
         missing = n_df - np.count_nonzero(pcnd[col].isnull().values)
-        mis_perc = 100 - float(missing) / n_df * 100 #float就是将数据改成小数点形式。eg：10 -> 10.0
-        print ("{col}的缺失比例是{miss}%".format(col=col,miss=mis_perc))
-        tnum.append(t) #用于在列表末尾添加新的对象
+        mis_perc = 100 - float(missing) / n_df * 100
+        print ("Missing percent for {col} is {miss}%".format(col=col,miss=mis_perc))
+        tnum.append(t)
         tmis.append(mis_perc)
         t = t + 1
         if mis_perc > prob :
@@ -42,26 +42,22 @@ def clean(path):
     cols = pcnd.columns.tolist()
             
     cat_tran = []
-    print ("\nDescriptive variables有:")
+    print ("\nDescriptive variables have:")
     for col in cols:
         if pcnd[col].dtype == "object":
             print (col)
             cat_tran.append(col)
                     
-    print ("\n开始转换Descriptive variables...")
+    print ("\nBegin to transfer descriptive variables...")
     le = preprocessing.LabelEncoder()
     for col in cat_tran:
         tran1 = le.fit_transform(pcnd[col].tolist())
         tran_df = pd.DataFrame(tran1, columns=['num_'+col])
-        print("{col}经过转化为{num_col}".format(col=col,num_col='num_'+col))
-        #把descriptive variables从原本的dataset中删掉，再把转换过的加回去
+        print("{col} is transform to{num_col}".format(col=col,num_col='num_'+col))
         pcnd.drop([col],axis=1,inplace=True)
         pcnd = pd.concat([pcnd, tran_df], axis=1)
     print('')
     return pcnd
-
-#整个上面一大段都是在定义clean这个公式，下面我们才开始用
-print('data')
 
 data=clean('D:/Academics/Past Semesters/Fall 1/IEEE/sum.csv')
 data.head()
